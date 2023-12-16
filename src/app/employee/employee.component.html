@@ -1,0 +1,126 @@
+<div class="page-wrapper">
+  <div class="container">
+    <h1 class="text-center page-title">Employee List</h1>
+    <form [formGroup]="searchForm">
+      <table class="table">
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th class="wt-300">Job Title</th>
+          <th>Age</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>
+            Action
+            <button
+              class="button btn-primary icon-type-btn"
+              (click)="opneActionEmployeeModal('add')"
+            >
+              <i class="fa-solid fa-user-plus"></i>
+            </button>
+          </th>
+        </tr>
+        <tr>
+          <td>&nbsp;</td>
+          <td>
+            <input
+              type="text"
+              formControlName="name"
+              class="form-field"
+              placeholder="Search by name"
+            />
+          </td>
+          <td>
+            <select class="form-field" formControlName="roles">
+              <option value="" disabled selected>Select your role</option>
+              <option value="{{ role.value }}" *ngFor="let role of rolesList">
+                {{ role.label }}
+              </option>
+            </select>
+          </td>
+          <td>
+            <input
+              type="text"
+              class="form-field"
+              formControlName="age"
+              placeholder="Age"
+            />
+          </td>
+          <td>
+            <input type="date" class="form-field" formControlName="startDate" />
+          </td>
+          <td>
+            <input type="date" class="form-field" formControlName="endDate" />
+          </td>
+
+          <td>
+            <div class="btn-group">
+              <button
+                type="button"
+                (click)="searchFilter()"
+                class="button btn-primary icon-type-btn"
+              >
+                <i class="fa-solid fa-filter"></i>
+              </button>
+              <button
+                class="button btn-primary icon-type-btn"
+                (click)="clearSearcFilter()"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <ng-container *ngIf="employeeList.length !== 0">
+          <tr *ngFor="let employee of employeeList; let i = index">
+            <td>{{ getIndex(i) }}</td>
+            <td>{{ employee.name }}</td>
+            <td>{{ getRoleName(employee.role) }}</td>
+            <td>{{ employee.age }}</td>
+            <td>{{ employee.startDate | date : "dd/MM/yyyy" }}</td>
+            <td>
+              <span *ngIf="employee.endDate; else currentlyWorking">
+                {{ employee.endDate | date : "dd/MM/yyyy" }}
+              </span>
+              <ng-template #currentlyWorking>
+                <span class="status-label status-completed"
+                  >Curently Working</span
+                >
+              </ng-template>
+            </td>
+            <td>
+              <div class="btn-group">
+                <button
+                  class="button btn-primary icon-type-btn"
+                  (click)="opneActionEmployeeModal('edit', i)"
+                >
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+                <button
+                  class="button btn-primary icon-type-btn"
+                  (click)="deleteEmployeeDetails(i)"
+                >
+                  <i class="fa-solid fa-trash-can"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </ng-container>
+        <tr *ngIf="employeeList.length === 0">
+          <td colspan="7">
+            <div class="not-found">Not Found</div>
+          </td>
+        </tr>
+      </table>
+    </form>
+  </div>
+</div>
+
+<app-action-modal
+  *ngIf="isOpen"
+  (emitCloseModal)="getCloseModalValue($event)"
+  (emitEmployeeDetails)="getEmployeeDetails($event)"
+  [actionType]="actionType"
+  [viewEmployeeDetails]="viewEmployeeDetails"
+></app-action-modal>
